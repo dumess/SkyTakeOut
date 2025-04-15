@@ -39,6 +39,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param employeeLoginDTO
      * @return
      */
+    @Override
     public Employee login(EmployeeLoginDTO employeeLoginDTO) {
         String username = employeeLoginDTO.getUsername();
         String password = employeeLoginDTO.getPassword();
@@ -72,6 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * 添加员工
      * @param employeeDTO
      */
+    @Override
     public void save(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         //转换为实体类
@@ -93,10 +95,26 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param employeePageQueryDTO
      * @return
      */
+    @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
         //使用pageHelper动态添加limit条件
         PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
         Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
         return new PageResult(page.getTotal(), page.getResult());
+    }
+
+    /**
+     * 启用和禁用员工
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStopEmployee(Integer status, long id) {
+        //将要修改的属性封装到employee中以便用mybatis中的一个方法动态更新
+        Employee employee = Employee.builder()
+                .id(id)
+                .status(status)
+                .build();
+        employeeMapper.update(employee);
     }
 }
